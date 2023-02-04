@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;600&display=swap");
+
+:root {
+    --background-rgb: 32, 0, 10;
+    --foreground-rgb: 240, 240, 240;
+    --highlight-background-rgb: 60, 40, 40;
+    --accent-1-rgb: 120, 0, 30;
+    --accent-4-rgb: 200, 40, 60;
+    --accent-5-rgb: 220, 50, 75;
+    --accent-6-rgb: 240, 60, 90;
+    --accent-7-rgb: 255, 75, 100;
+    --accent-8-rgb: 255, 100, 120;
+    --accent-9-rgb: 255, 120, 150;
+    --accent-X-rgb: 255, 200, 200;
+
+    --background: rgb(var(--background-rgb));
+    --foreground: rgb(var(--foreground-rgb));
+    --highlight-background: rgb(var(--highlight-background-rgb));
+    --accent-1: rgb(var(--accent-1-rgb));
+    --accent-4: rgb(var(--accent-4-rgb));
+    --accent-5: rgb(var(--accent-5-rgb));
+    --accent-6: rgb(var(--accent-6-rgb));
+    --accent-7: rgb(var(--accent-7-rgb));
+    --accent-8: rgb(var(--accent-8-rgb));
+    --accent-9: rgb(var(--accent-9-rgb));
+    --accent-X: rgb(var(--accent-X-rgb));
+
+    --glass: #ffffff11;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+html {
+    position: relative;
+    min-height: 100vh;
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: "Rubik", sans-serif;
+    font-size: 100%;
+    line-height: 1.8em;
+    font-weight: 300;
+    margin: 0;
+    min-height: 100vh;
+
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    padding: 2em 10vw;
+    background-color: rgb(var(--accent-1-rgb), 40%);
+}
+
+b {
+    font-weight: 600;
+}
+
+.container {
+    padding: 0 10%;
+}
+
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 0 5%;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: var(--accent-7);
+}
+
+hr {
+    color: var(--accent-6);
+    width: 60%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: normal;
+}
+
+pre,
+code {
+    background-color: var(--highlight-background);
+    border-radius: 5px;
+}
+
+pre {
+    padding: 0.5em 1em;
+}
+
+code {
+    padding: 0.5em;
+}
+
+code.plain {
+    background-color: unset;
+}
+
+.center-box {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button {
+    background-color: var(--accent-4);
+    color: var(--foreground);
+
+    border: none;
+    border-radius: 5px;
+    outline: none;
+
+    padding: 0.75em;
+}
+
+button:disabled {
+    filter: grayscale();
+}
+
+.glass {
+    background-color: var(--glass);
+    padding: 1em 2em;
+    border-radius: 10px;
+}
+
+.row {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+textarea {
+    padding: 0.5em 0.5em 0 0.5em;
+    background-color: var(--glass);
+    color: var(--foreground);
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    line-height: 20px;
+    width: 100%;
+}
