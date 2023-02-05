@@ -28,14 +28,12 @@
             </div>
         </main>
 
-        {#if $page.route.id !== "/tio"}
-            <footer>
-                &copy; 2023 Vyxal/hyper-neutrino -
-                <a href="https://github.com/Vyxal/vyxapedia">GitHub repository</a>
-                -
-                <a href="https://github.com/Vyxal/vyxapedia/issues/new">Report a Bug</a>
-            </footer>
-        {/if}
+        <footer>
+            &copy; 2023 Vyxal/hyper-neutrino -
+            <a href="https://github.com/Vyxal/vyxapedia">GitHub repository</a>
+            -
+            <a href="https://github.com/Vyxal/vyxapedia/issues/new">Report a Bug</a>
+        </footer>
     </body>
 </html>
 

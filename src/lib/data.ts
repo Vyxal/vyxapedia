@@ -6848,7 +6848,7 @@ export const shortcut_map = {
     pi: "Π",
     ",,": "„",
     "''": "‟"
-};
+} as { [key: string]: string };
 
 export const shortcut_list = Object.entries(shortcut_map);
 

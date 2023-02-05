@@ -7,8 +7,9 @@
 <script lang="ts">
     import { Collapsable, Textarea } from "@daedalus-discord/webkit";
     import md5 from "js-md5";
-    import { onMount } from "svelte";
+    import { onMount, SvelteComponent, tick } from "svelte";
     import { codepage } from "../../lib/data.js";
+    import shortcut from "../../lib/shortcut.js";
 
     let header: string = "";
     let code: string = "";
@@ -49,8 +50,8 @@
     let session_id: number = 0;
     const canceled: { [key: number]: boolean } = {};
 
-    let stdout_update: () => void;
-    let stderr_update: () => void;
+    let stdout_element: SvelteComponent;
+    let stderr_element: SvelteComponent;
 
     async function run() {
         if (running) {
@@ -89,14 +90,22 @@
         if (canceled[current_id]) return;
 
         ({ stdout, stderr } = await req.json());
-        stdout_update();
-        stderr_update();
+
+        await tick();
+
+        stdout_element.update();
+        stderr_element.update();
 
         running = false;
     }
 
+    const getdata = () => [header, code, footer, flags, stdin];
+    let last: string[] = getdata();
+
     const update = () =>
-        _loaded && (document.location = "#" + encode([header, code, footer, flags, stdin]));
+        _loaded &&
+        last.some((x, i) => x !== getdata()[i]) &&
+        (document.location = "#" + encode((last = getdata())));
 
     function show_flags() {
         return flags ? ` \`${flags}\`` : "";
@@ -152,13 +161,28 @@
         );
     }
 
-    function sync() {
-        stdout_update?.();
-        stderr_update?.();
-        requestAnimationFrame(sync);
+    let target_id: string = "code";
+    let target: (text: string) => void = (text) => (code = text);
+
+    function type(char: string) {
+        const element = document.getElementById(target_id) as any;
+        if (!element) return;
+
+        const next = element.selectionStart + 1;
+
+        target(
+            element.value.substring(0, element.selectionStart) +
+                char +
+                element.value.substring(element.selectionEnd)
+        );
+
+        element.selectionStart = element.selectionEnd = next;
+        element.focus();
+
+        update();
     }
 
-    onMount(sync);
+    onMount(() => (window.onbeforeunload = () => true));
 </script>
 
 <svelte:window on:keydown={(e) => e.ctrlKey && e.key === "Enter" && run()} />
@@ -175,7 +199,9 @@
 <Collapsable title="Keyboard" header_color="var(--foreground)" color="transparent" duration={200}>
     <div id="keyboard">
         {#each codepage as char}
-            <code class="plain">{char}</code>
+            <code class="plain" on:click={() => type(char)} on:keydown={() => type(char)}>
+                {char}
+            </code>
         {/each}
     </div>
 </Collapsable>
@@ -187,7 +213,14 @@
     duration={200}
     open={_header}
 >
-    <Textarea min_height="5em" bind:value={header} on:input={update} />
+    <Textarea
+        id="header"
+        min_height="5em"
+        bind:value={header}
+        on:input={update}
+        on:keydown={shortcut((x) => (header = x))}
+        on:click={() => ((target_id = "header"), (target = (x) => (header = x)))}
+    />
 </Collapsable>
 
 <Collapsable
@@ -197,7 +230,14 @@
     duration={200}
     open={true}
 >
-    <Textarea min_height="5em" bind:value={code} on:input={update} />
+    <Textarea
+        id="code"
+        min_height="5em"
+        bind:value={code}
+        on:input={update}
+        on:keydown={shortcut((x) => (code = x))}
+        on:click={() => ((target_id = "code"), (target = (x) => (code = x)))}
+    />
 </Collapsable>
 
 <Collapsable
@@ -207,7 +247,14 @@
     duration={200}
     open={_footer}
 >
-    <Textarea min_height="5em" bind:value={footer} on:input={update} />
+    <Textarea
+        id="footer"
+        min_height="5em"
+        bind:value={footer}
+        on:input={update}
+        on:keydown={shortcut((x) => (footer = x))}
+        on:click={() => ((target_id = "footer"), (target = (x) => (footer = x)))}
+    />
 </Collapsable>
 
 <Collapsable
@@ -217,7 +264,14 @@
     duration={200}
     open={_flags}
 >
-    <Textarea min_height="5em" bind:value={flags} on:input={update} />
+    <Textarea
+        id="flags"
+        min_height="5em"
+        bind:value={flags}
+        on:input={update}
+        on:keydown={shortcut((x) => (flags = x))}
+        on:click={() => ((target_id = "flags"), (target = (x) => (flags = x)))}
+    />
 </Collapsable>
 
 <Collapsable
@@ -227,7 +281,14 @@
     duration={200}
     open={_stdin}
 >
-    <Textarea min_height="5em" bind:value={stdin} on:input={update} />
+    <Textarea
+        id="stdin"
+        min_height="5em"
+        bind:value={stdin}
+        on:input={update}
+        on:keydown={shortcut((x) => (stdin = x))}
+        on:click={() => ((target_id = "stdin"), (target = (x) => (stdin = x)))}
+    />
 </Collapsable>
 
 <Collapsable
@@ -241,7 +302,7 @@
         id="stdout"
         min_height="5em"
         bind:value={stdout}
-        bind:update={stdout_update}
+        bind:this={stdout_element}
         readonly
     />
     <button on:click={() => navigator.clipboard.writeText(stdout)}>Copy STDOUT</button>
@@ -254,7 +315,7 @@
     duration={200}
     open={true}
 >
-    <Textarea min_height="5em" bind:value={stderr} bind:update={stderr_update} readonly />
+    <Textarea min_height="5em" bind:value={stderr} bind:this={stderr_element} readonly />
     <button on:click={() => navigator.clipboard.writeText(stderr)}>Copy STDERR</button>
 </Collapsable>
 
@@ -272,12 +333,14 @@
 
     #keyboard {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 1em);
+        grid-template-columns: repeat(auto-fill, 2em);
 
         code {
             user-select: none;
             -moz-user-select: none;
             -webkit-user-select: none;
+
+            text-align: center;
         }
     }
 </style>
