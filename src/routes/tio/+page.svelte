@@ -91,11 +91,7 @@
 
         ({ stdout, stderr } = await req.json());
 
-        await tick();
-
-        stdout_element.update();
-        stderr_element.update();
-
+        await select();
         running = false;
     }
 
@@ -115,7 +111,10 @@
         return `${code.length} byte${code.length === 1 ? "" : "s"}`;
     }
 
-    function select() {
+    async function select() {
+        await tick();
+        stdout_element.update();
+        stderr_element.update();
         document.getElementById("stdout")?.scrollIntoView();
     }
 
