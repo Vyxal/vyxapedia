@@ -37,7 +37,7 @@
         <li>
             <b>Modifiers</b> are prefix operators that modify the next element. These are not to be confused
             with elements that manipulate function objects, as function objects are also values (functions
-            are first-class membesr in Vyxal).
+            are first-class members in Vyxal).
         </li>
         <li>
             <b>Structures</b> are syntax components in Vyxal, such as if-else statements, loops, lambdas,
